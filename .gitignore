@@ -1,0 +1,5 @@
+.python-version
+.vscode/
+Pipfile
+Pipfile.lock
+db.sqlite3

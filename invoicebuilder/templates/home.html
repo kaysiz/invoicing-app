@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for invoice in object_list  %}
+        <div class="invoice-entry">
+            <h2><a href="{% url 'invoice_detail' invoice.pk %}">{{ invoice.title }}</a></h2>
+            <p>{{ invoice.body }}</p>
+    {% endfor %}
+
+    <div>
+        {% for invoice in object_list  %}
+            <div class="invoices-list">
+               <ul>
+                    <li> <a href="{% url 'invoice_detail' invoice.pk %}">{{ invoice.id }} {{invoice.client}} {{ invoice.get_invoice_total }} {{ invoice.create_date}}</a> </li>
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}
