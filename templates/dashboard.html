@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load static %}
+
+
+{% comment %} Main user dashboard {% endcomment %}
+{% block content %}
+        <nav class="left-nav">
+            <ul>
+                <li><a href="">Invoices</a></li>
+                <li><a href="">Clients</a></li>
+                <li><a href="">Sign Out</a></li>
+                <li><a href="#">Add New Client</a></li>
+                <li><a href="{% url 'new-invoice' %}">Create Invoice</a></li>
+            </ul>
+        </nav>
+
+        {% comment %} {% if user.is_authenticated %}
+                <p>Hi {{ user.username }}</p>
+                <p><a href="{% url 'logout' %}">Logout</a></p>
+            {% else %}
+                <p>You are not logged in.</p>
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %} {% endcomment %}
+
+{% endblock content %}
+
