@@ -15,6 +15,20 @@
             </ul>
         </nav>
 
+    <div>
+        <h2> Invoices </h2>
+            <div class="invoices-list">
+
+                <ol>
+                    {% for invoice in object_list  %}
+                        <li> <a href="{% url 'invoice-detail' invoice.pk %}">{{invoice.client}} {{ invoice.get_invoice_total }} {{ invoice.create_date}}</a> </li>
+                    {% endfor %}
+                </ol>
+
+
+            </div>
+    </div>
+
         {% comment %} {% if user.is_authenticated %}
                 <p>Hi {{ user.username }}</p>
                 <p><a href="{% url 'logout' %}">Logout</a></p>

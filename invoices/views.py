@@ -16,3 +16,8 @@ class InvoiceCreateView(CreateView):
 class DashboardView(ListView):
     model = Invoice
     template_name = 'dashboard.html'
+
+
+class InvoiceDetailView(DetailView):
+    model = Invoice
+    template_name = 'invoice_detail.html'

@@ -1,10 +1,11 @@
 from django.db import models
+from clients.models import Client
 
 
 class Invoice(models.Model):
     title = models.CharField(max_length=200)
     # user
-    # client
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
     body = models.TextField()
     invoice_total = models.DecimalField(max_digits=6, decimal_places=2)
     create_date = models.DateField(auto_now_add=True)
