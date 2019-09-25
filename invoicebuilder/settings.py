@@ -41,9 +41,8 @@ INSTALLED_APPS = [
 
     # Local
     'invoices',
-    'clients',
     'users.apps.UsersConfig',
-    'phonenumber_field'
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
