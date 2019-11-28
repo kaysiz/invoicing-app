@@ -1,23 +1,43 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
-from .models import Invoice
+from .models import Invoice, Client
 
+
+class DashboardView(ListView):
+    # TODO: Consider removing this or InvoiceListView
+    model = Invoice
+    template_name = 'dashboard.html'
 
 class InvoiceListView(ListView):
     model = Invoice
     template_name = 'home.html'
+
+class InvoiceDetailView(DetailView):
+    model = Invoice
+    template_name = 'invoice_detail.html'
+
 
 class InvoiceCreateView(CreateView):
     model = Invoice
     template_name = 'new_invoice.html'
     fields = '__all__'
 
-class DashboardView(ListView):
-    model = Invoice
-    template_name = 'dashboard.html'
+
+class ClientCreateView(CreateView):
+    model = Client
+    template_name = 'new_client.html'
+    fields = '__all__' # All fields on the form should be used
 
 
-class InvoiceDetailView(DetailView):
-    model = Invoice
-    template_name = 'invoice_detail.html'
+class ClientListView(ListView):
+    model = Client
+    template_name = 'clients.html'
+
+
+class ClientDetailView(DetailView):
+    model = Client
+    template_name = 'client_detail.html'
+
+class ClientUpdateView(UpdateView):
+    pass

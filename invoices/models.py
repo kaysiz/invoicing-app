@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -13,6 +14,9 @@ class Client(models.Model):
     address2 = models.CharField(max_length=100)
     country = models.CharField(max_length=100)
     phone_number = PhoneNumberField(blank=True)
+
+    def get_absolute_url(self):
+        return reverse('clien-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -29,8 +33,14 @@ class Invoice(models.Model):
     invoice_total = models.DecimalField(max_digits=6, decimal_places=2)
     create_date = models.DateField(auto_now_add=True)
 
+    def get_absolute_url(self):
+        return reverse('invoice-detail', kwargs={'pk': self.pk})
+
     def __str__(self):
         return self.title
+
+    def __repr__(self):
+        return f'<Invoice: {self.client} - {self.title}>'
 
     def get_invoice_total(self):
         return f'${self.invoice_total}'
