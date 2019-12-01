@@ -15,7 +15,7 @@
         <div class="nav-right">
             <ul class="menu">
                 <li><a href="#">Home</a></li>
-                <li><a href="#">Login</a></li>
+                <li><a href="{% url 'login' %}">Login</a></li>
                 <li><a href="#">Sign Up</a></li>
 
 
@@ -24,13 +24,13 @@
         </div>
 
 
-        {% comment %} {% if user.is_authenticated %}
+        {% if user.is_authenticated %}
             <p>Hi {{ user.username }}</p>
             <p><a href="{% url 'logout' %}">Logout</a></p>
         {% else %}
             <p>You are not logged in.</p>
             <a href="{% url 'login' %}">Login</a>
-        {% endif %} {% endcomment %}
+        {% endif %}
 
 
         <div class="content">

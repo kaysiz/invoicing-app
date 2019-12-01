@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <h3>Your Invoices:</h3>
     {% for invoice in object_list  %}
         <div class="invoice-entry">
             <h2>{{ invoice.title }}</a></h2>

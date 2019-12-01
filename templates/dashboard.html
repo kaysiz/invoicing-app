@@ -7,7 +7,7 @@
 {% block content %}
         <nav class="left-nav">
             <ul>
-                <li><a href="">Invoices</a></li>
+                <li><a href="{% url 'invoice-list'%}">Invoices</a></li>
                 <li><a href="{% url 'client-list' %}">Clients</a></li>
                 <li><a href="">Sign Out</a></li>
                 <li><a href="{% url 'new-client' %}">Add New Client</a></li>

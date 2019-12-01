@@ -5,7 +5,7 @@
     {% for client in object_list %}
         <div class="clients-list">
             <ul>
-                <li>{{client.company}}</li>
+                <li>{{client.first_name}} -- {{ client.company }}</li>
             </ul>
         </div>
     {% endfor %}
