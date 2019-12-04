@@ -1,8 +1,73 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Invoice Detail</h1>
-    <h2> {{ invoice.title }} </h2>
-    <p> {{ invoice.body }} </p>
-    <p> Total: {{ invoice.get_invoice_total }} </p>
+    <section>
+        <h1>Invoice</h1>
+        <!-- <article>
+            <div class="sender-and-recipient">
+                <div class="sender">
+                    FROM
+                    Contractor
+                </div>
+                <div class="recipient">
+                    TO
+                    Company
+                </div>
+            </div>
+            <div class="invoice-details">
+                <div class="invoice-meta">
+                    Invoice No:
+                    Invoice Date: Date
+                </div>
+                <div>
+                    Due: Due date
+                </div>
+            </div>
+
+        </article> -->
+        <article>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan=5>The Invoice Header</th>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <tr>
+                        <td colspan=2>{{ user }}</td>
+                        <td colspan=3>{{ client }}<br/><br/>
+                            {{client.company}}  <br/>
+                            {{client.address1}} <br/>
+                            {{client.address2}} <br/>
+                            {{client.country}}  <br/>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Item</th>
+                        <th>HRS/QTY</th>
+                        <th>Rate</th>
+                        <th>Tax</th>
+                        <th>Subtotal</th>
+                    </tr>
+                    <!-- Add a for loop here to dynamically add invoice items -->
+                    {% for item in invoice_items %}
+                        <tr>
+                            <td> {{ item.item }} </td>
+                            <td> {{ item.quantity }} </td>
+                            <td> {{ item.rate }} </td>
+                            <td>Rate</td>
+                            <td> {{ item.subtotal }} </td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="5" class="invoice-total">Invoice Total: ${{ invoice.invoice_total }}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </article>
+    </section>
+
 {% endblock content%}
