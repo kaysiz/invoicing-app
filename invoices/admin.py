@@ -17,4 +17,4 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(Client)
-# admin.site.register(InvoiceItems)
+admin.site.register(InvoiceItems)
