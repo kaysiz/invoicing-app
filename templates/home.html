@@ -1,20 +1,18 @@
 {% extends 'base.html' %}
 
-{% block content %}
-    <h3>Your Invoices:</h3>
-    {% for invoice in object_list  %}
-        <div class="invoice-entry">
-            <h2>{{ invoice.title }}</a></h2>
-        </div>
-    {% endfor %}
+{% block title %}Invoices Landing Page{% endblock %}
 
-    <div>
-        {% for invoice in object_list  %}
-            <div class="invoices-list">
-               <ul>
-                    {% comment %} <li> <a href="{% url 'invoice_detail' invoice.pk %}">{{ invoice.id }} {{invoice.client}} {{ invoice.get_invoice_total }} {{ invoice.create_date}}</a> </li> {% endcomment %}
-                </ul>
-            </div>
-        {% endfor %}
-    </div>
+
+{% block content %}
+    <h3>Invoicing App</h3>
+    {% if user.is_authenticated %}
+        <p>Hi {{ user.username }}</p>
+        <p><a href="{% url 'logout' %}">Logout</a></p>
+    {% else %}
+        <p>You are not logged in.</p>
+
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'signup' %}">Sign Up</a>
+    {% endif %}
+
 {% endblock content %}
