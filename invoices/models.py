@@ -5,6 +5,9 @@ from django.urls import reverse
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+# class InvoiceManager(models.Manager):
+#     def get_invoice_items(self):
+#         return self.items.all()
 
 class Client(models.Model):
     first_name = models.CharField(max_length=200)
@@ -28,36 +31,49 @@ class Invoice(models.Model):
     title = models.CharField(max_length=200)
     # user
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    description = models.TextField()
+    # description = models.TextField()
     invoice_total = models.DecimalField(max_digits=6, decimal_places=2, blank=True, editable=False)
     create_date = models.DateField(auto_now_add=True)
-    # line_item = models.ForeignKey(InvoiceItems, on_delete=models.CASCADE, blank=True)
+
+    class Meta:
+        verbose_name: "Invoice"
+        verbose_name_plural: "Invoices"
 
     def get_absolute_url(self):
         return reverse('invoice-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
-        return self.title
+        return f'{self.title} - {self.invoice_total}'
 
     def __repr__(self):
         return f'<Invoice: {self.client} - {self.title}>'
 
     def get_invoice_total(self):
         # return f'${self.invoice_total}'
-        total = Decimal('0.00')
+        total = 0
         total = sum([item.subtotal() for item in self.items.all()])
         self.invoice_total = total
+        # return total
 
     def save(self, *args, **kwargs):
+        #  TODO: Figure out whay this doesn't always work
+        # self.invoice_total = self.get_invoice_total()
+        # for item in self.items.all():
+        #     item.save()
         self.get_invoice_total()
-        super(Invoice, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
-class InvoiceItems(models.Model):
+class InvoiceItem(models.Model):
     # Invoice Line Items
     invoice = models.ForeignKey(Invoice, related_name='items', on_delete=models.CASCADE)
     item = models.CharField(max_length=200)
     quantity = models.IntegerField(default=0)
     rate = models.DecimalField(max_digits=6, decimal_places=2)
+    tax = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+
+    class Meta:
+        verbose_name: "Invoice Item"
+        verbose_name_plural: "Invoice Items"
 
     def __str__(self):
         # return self.item
@@ -68,5 +84,10 @@ class InvoiceItems(models.Model):
 
     def subtotal(self):
         return self.quantity * self.rate
+
+    def save(self, *args, **kwargs):
+        # Add a call to update invoice total here
+        super().save(*args, **kwargs)
+
 
 

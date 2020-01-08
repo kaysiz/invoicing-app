@@ -1,11 +1,20 @@
 from django.contrib import admin
-from .models import Invoice, Client, InvoiceItems
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
 
+from users.forms import CustomUserCreationForm, CustomUserChangeForm
+from users.models import CustomUser
+from .models import Invoice, Client, InvoiceItem
 
+class CustomUserAdmin(UserAdmin):
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
+    model = CustomUser
+    list_display = ['email', 'username']
 
 
 class InvoiceItemsInline(admin.TabularInline):
-    model = InvoiceItems
+    model = InvoiceItem
 
 
 class InvoiceAdmin(admin.ModelAdmin):
@@ -17,4 +26,6 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(Client)
-admin.site.register(InvoiceItems)
+admin.site.register(InvoiceItem)
+
+# admin.site.register(CustomUser, CustomUserAdmin)
