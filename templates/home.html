@@ -4,8 +4,8 @@
 
 
 {% block content %}
-    <h3>Invoicing App</h3>
-    {% if user.is_authenticated %}
+    <h3>Invoicing App Landing Page</h3>
+    {% comment %} {% if user.is_authenticated %}
         <p>Hi {{ user.username }}</p>
         <p><a href="{% url 'logout' %}">Logout</a></p>
     {% else %}
@@ -13,6 +13,6 @@
 
         <a href="{% url 'login' %}">Login</a>
         <a href="{% url 'signup' %}">Sign Up</a>
-    {% endif %}
+    {% endif %} {% endcomment %}
 
 {% endblock content %}
