@@ -214,29 +214,29 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
 #     }
 #     return render(request,'new_invoice_test.html', context)
 
-def edit_invoice(request, invoice_id):
-    # https://github.com/elo80ka/django-dynamic-formset
-    # https://simpleit.rocks/python/django/dynamic-add-form-with-add-button-in-django-modelformset-template/
-    # https://medium.com/all-about-django/adding-forms-dynamically-to-a-django-formset-375f1090c2b0
-    invoice = Invoice.objects.get(pk=invoice_id)
-    InvoiceItemsFormset = modelformset_factory(InvoiceItem, fields=('item', 'quantity','rate','tax',))
-
-    if request.method == 'POST':
-        formset = InvoiceItemsFormset(request.POST, queryset=InvoiceItem.objects.filter(invoice__id=invoice.pk))
-        if formset.is_valid():
-            instances = formset.save(commit=False)
-            for instance in  instances:
-                instance.invoice_id = invoice.id
-                instance.save()
-            invoice.save() # Do this in order to update invoice total
-    # else:
-    #     # Create a new invoice here
-    #     # https://docs.djangoproject.com/en/3.0/topics/forms/modelforms/#saving-objects-in-the-formset
-    #     formset = InvoiceItemsFormset(request.POST)
-    #     invoice = Invoice()
-    #     if formset.is_valid():
-    #         instances = formset.save(commit=False)
-
-
-    formset = InvoiceItemsFormset(queryset=InvoiceItem.objects.filter(invoice__id=invoice.pk))
-    return render(request, 'index.html', {'formset' : formset})
+# def edit_invoice(request, invoice_id):
+#     # https://github.com/elo80ka/django-dynamic-formset
+#     # https://simpleit.rocks/python/django/dynamic-add-form-with-add-button-in-django-modelformset-template/
+#     # https://medium.com/all-about-django/adding-forms-dynamically-to-a-django-formset-375f1090c2b0
+#     invoice = Invoice.objects.get(pk=invoice_id)
+#     InvoiceItemsFormset = modelformset_factory(InvoiceItem, fields=('item', 'quantity','rate','tax',))
+#
+#     if request.method == 'POST':
+#         formset = InvoiceItemsFormset(request.POST, queryset=InvoiceItem.objects.filter(invoice__id=invoice.pk))
+#         if formset.is_valid():
+#             instances = formset.save(commit=False)
+#             for instance in  instances:
+#                 instance.invoice_id = invoice.id
+#                 instance.save()
+#             invoice.save() # Do this in order to update invoice total
+#     # else:
+#     #     # Create a new invoice here
+#     #     # https://docs.djangoproject.com/en/3.0/topics/forms/modelforms/#saving-objects-in-the-formset
+#     #     formset = InvoiceItemsFormset(request.POST)
+#     #     invoice = Invoice()
+#     #     if formset.is_valid():
+#     #         instances = formset.save(commit=False)
+#
+#
+#     formset = InvoiceItemsFormset(queryset=InvoiceItem.objects.filter(invoice__id=invoice.pk))
+#     return render(request, 'index.html', {'formset' : formset})

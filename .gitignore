@@ -1,5 +1,9 @@
 .python-version
 .vscode/
+.coverage
+.python-version
+geckodriver.log
+.idea/
 Pipfile
 Pipfile.lock
 db.sqlite3
