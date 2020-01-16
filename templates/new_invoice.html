@@ -1,13 +1,48 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
 
 
 {% block content %}
-    <h1> Create a new Invoice</h1>
-    <form action="" method="POST">{% csrf_token %}
-        {{ form.as_p }}
-        <h2>Invoice Items</h2>
-        {{ invoice_items }}
-        <input type="submit" value="Save"/>
-    </form>
+{#<pre> {% filter force_escape %} {% debug %} {% endfilter %} </pre>#}
+    <div class="row d-flex align-items-center">
+        <div class="col-md-6 offset-md-3">
+            <h1> Create a new Invoice</h1>
+           <form action="" method="POST">
+               {% csrf_token %}
+               {{ form|crispy }}
+                <h2>Invoice Items</h2>
+
+               {{ invoice_items|crispy }}
+           </form>
+
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-6">
+                        {{ form.title|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        {{ form.client|as_crispy_field }}
+                    </div>
+                </div>
+                {% for invoice_item in form.invoice_items %}
+                <div class="row">
+                    <div class="col-6">
+                        {{ invoice_items.form.base_field.item|as_crispy_field }}
+                    </div>
+                </div>
+                {% endfor %}
+
+
+                {{ form.as_p }}
+                <h2>Invoice Items</h2>
+                {{ invoice_items }}
+                <input type="submit" value="Save"/>
+            </form>
+        </div>
+    </div>
 
 {% endblock content %}

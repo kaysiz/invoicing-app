@@ -1,8 +1,9 @@
 from django.shortcuts import render
-from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse, reverse_lazy
 from django.forms import formset_factory, modelformset_factory
 from django.forms.models import inlineformset_factory
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from .models import Invoice, Client, InvoiceItem
 from .forms import InvoiceItemsForm
@@ -11,23 +12,32 @@ InvoiceItemsFormset = inlineformset_factory(
     Invoice, InvoiceItem, fields=('item', 'quantity', 'rate',),
     extra=1,
 )
-class DashboardView(ListView):
-    # TODO: Consider removing this or InvoiceListView
-    model = Invoice
+
+
+class InvoiceListView(LoginRequiredMixin, ListView):
+    # model = Invoice --> Thi is the same as Invoice.objects.all()
+
     template_name = 'dashboard.html'
 
-class InvoiceListView(ListView):
-    model = Invoice
-    template_name = 'home.html'
+    # Limit queryset to invoices by logged in user
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Invoice.objects.filter(user=self.request.user)
+        else:
+            return Invoice.objects.none()
 
-class InvoiceDetailView(DetailView):
-    model = Invoice
+class InvoiceDetailView(LoginRequiredMixin, DetailView):
+
     template_name = 'invoice_detail.html'
-    # invoice_items = Invoice.items.all()
-    # https://stackoverflow.com/questions/12187751/django-pass-multiple-models-to-one-template
+
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Invoice.objects.filter(user=self.request.user)
+        else:
+            return Invoice.objects.none()
 
     def get_context_data(self, **kwargs):
-        # print context
         # Call the base implementation first to get the data
         context = super(InvoiceDetailView, self).get_context_data(**kwargs)
         # Add client to the context -- to be used by invoice template
@@ -35,20 +45,26 @@ class InvoiceDetailView(DetailView):
         context['client'] = client
         # Add invoice items queryset
         context['invoice_items'] = context['invoice'].items.all()
+        user = context['invoice'].user
+        context['user'] = user
         return context
 
-class InvoiceCreateView(CreateView):
+class InvoiceCreateView(LoginRequiredMixin, CreateView):
     model = Invoice
     template_name = 'new_invoice.html'
-    fields = ('title', 'client',)
+    fields = ('title', 'client')
 
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Client.objects.filter(created_by=self.request.user)
+        else:
+            return Client.objects.none()
 
     def get_context_data(self, **kwargs):
         # To display the invoice items
         # Call the base implementation first to get the data
         # context = super(InvoiceCreateView, self).get_context_data(**kwargs)
         # Add invoice items queryset
-        # context['invoice_items'] = context['invoice'].items.all()
         data = super().get_context_data(**kwargs)
         if self.request.POST:
             data['invoice_items'] = InvoiceItemsFormset(self.request.POST)
@@ -57,6 +73,8 @@ class InvoiceCreateView(CreateView):
         return data
 
     def form_valid(self, form):
+        # TODO: Add a client queryset here Only allow user to select clients linked to them
+        form.instance.user = self.request.user
         context = self.get_context_data()
         invoice_items = context['invoice_items']
         self.invoice = form.save()
@@ -69,10 +87,16 @@ class InvoiceCreateView(CreateView):
         return reverse('invoice-list')
 
 
-class InvoiceUpdateView(UpdateView):
-    model = Invoice
+class InvoiceUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['title']
     template_name = 'edit_invoice.html'
+
+    # Limit queryset to invoices created by logged in user
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Invoice.objects.filter(user=self.request.user)
+        else:
+            return Invoice.objects.none()
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -93,23 +117,61 @@ class InvoiceUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('invoice-list')
-class ClientCreateView(CreateView):
+
+class InvoiceDeleteView(LoginRequiredMixin, DeleteView):
+
+    template_name = 'confirm_delete_invoice.html'
+    success_url = reverse_lazy('invoice-list')
+
+    # Limit queryset to invoices created by logged in user
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Invoice.objects.filter(user=self.request.user)
+        else:
+            return Invoice.objects.none()
+
+
+class ClientCreateView(LoginRequiredMixin, CreateView):
     model = Client
     template_name = 'new_client.html'
-    fields = '__all__' # All fields on the form should be used
+    fields = (
+                'first_name', 'last_name', 'email', 'company',
+                'address1', 'address2', 'country', 'phone_number'
+    )
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
 
 
-class ClientListView(ListView):
+class ClientListView(LoginRequiredMixin, ListView):
     model = Client
     template_name = 'clients.html'
 
 
-class ClientDetailView(DetailView):
-    model = Client
+class ClientDetailView(LoginRequiredMixin, DetailView):
     template_name = 'client_detail.html'
 
-class ClientUpdateView(UpdateView):
-    pass
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Client.objects.filter(created_by=self.request.user)
+        else:
+            return Client.objects.none()
+
+class ClientUpdateView(LoginRequiredMixin, UpdateView):
+    template_name = 'edit_client.html'
+    fields = [
+        'first_name', 'last_name', 'email', 'company',
+        'address1', 'address2', 'country', 'phone_number',
+    ]
+
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Client.objects.filter(created_by=self.request.user)
+        else:
+            return Client.objects.none()
+
 
 
 # def invoice_create_view(request):

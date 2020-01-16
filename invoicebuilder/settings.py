@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'invoices',
     'users.apps.UsersConfig',
     'phonenumber_field',
+
+    # Other
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -125,5 +128,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'users.CustomUser'
-LOGIN_REDIRECT_URL = 'dashboard'
-LOGOUT_REDIRECT_URL = 'dashboard'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
