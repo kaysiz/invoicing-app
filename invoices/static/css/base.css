@@ -1,3 +1,7 @@
 .table-row-clickable:hover {
     cursor: pointer;
 }
+
+#new-invoice {
+    margin-top: 5%;
+}
