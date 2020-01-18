@@ -143,8 +143,13 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
 
 
 class ClientListView(LoginRequiredMixin, ListView):
-    model = Client
     template_name = 'clients.html'
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Client.objects.filter(created_by=self.request.user)
+        else:
+            return Client.objects.none()
 
 
 class ClientDetailView(LoginRequiredMixin, DetailView):

@@ -39,7 +39,6 @@ class InvoiceTests(TestCase):
             rate=20,
             tax=0,
         )
-        # self.invoice_item1.save()
 
         self.invoice_item2 = InvoiceItem.objects.create(
             invoice=self.invoice,
@@ -206,6 +205,7 @@ class ViewsLoggedInTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client_detail.html')
 
+
 class ViewsLoggedOutTests(TestCase):
 
     def test_invoice_list_view(self):
@@ -247,4 +247,38 @@ class ViewsLoggedOutTests(TestCase):
     def test_client_detail_view(self):
         response = self.client.get(reverse('client-detail', args=[1]))
         self.assertEqual(response.status_code, 302)
+
+
+class ViewsLoggedInNewUserTests(TestCase):
+    # These tests test website functionality for a new user who hasn't added
+    # data
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username='testuser',
+            email='test@email.com',
+            password='secretpassword'
+        )
+
+        # self.client1 = Client.objects.create(
+        #     first_name="Test", last_name="Client", email="test@example.com",
+        #     company="Xcorp", address1="1234 Paradise Lane",
+        #     address2="Good Street", country="Zimbabwe",
+        #     phone_number="+263772873063",
+        #     created_by=self.user
+        # )
+        #
+        # self.invoice = Invoice.objects.create(
+        #     title="Test Invoice 1",
+        #     user=self.user,
+        #     client=self.client1,
+        #     create_date=datetime.datetime.now()
+        # )
+
+        self.client.login(username='testuser', password='secretpassword')
+
+    def test_empty_client_list_view(self):
+        response = self.client.get(reverse('client-list'))
+        self.assertContains(response, "You have not created any clients yet")
+
 
