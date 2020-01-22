@@ -4,7 +4,7 @@ from .import views
 
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('', views.HomePage.as_view(), name='home'),
     # Invoices
     path('invoices/', views.InvoiceListView.as_view(), name='invoice-list'),
     path('invoices/new/', views.InvoiceCreateView.as_view(), name='new-invoice'),

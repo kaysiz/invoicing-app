@@ -12,15 +12,41 @@ InvoiceItemsFormset = inlineformset_factory(
 )
 
 
+class HomePage(LoginRequiredMixin, ListView):
+    template_name = 'home.html'
+    context_object_name = 'invoices'
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            # Ensure queryset is cached
+            invoices = Invoice.objects.filter(user=self.request.user)
+            return invoices
+        else:
+            return Invoice.objects.none()
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get the data
+        context = super(HomePage, self).get_context_data(**kwargs)
+        try:
+            recent_invoices = context['invoices'].order_by('-id')[:4]
+        except (IndexError, AttributeError):
+            recent_invoices = None
+        context['recent_invoices'] = recent_invoices
+        return context
+
+
+
+
 class InvoiceListView(LoginRequiredMixin, ListView):
     # model = Invoice --> This the same as Invoice.objects.all()
 
     template_name = 'dashboard.html'
 
-    # Limit queryset to invoices by logged in user
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Invoice.objects.filter(user=self.request.user)
+            # Ensure queryset is cached
+            invoices = Invoice.objects.filter(user=self.request.user)
+            return invoices
         else:
             return Invoice.objects.none()
 
@@ -62,8 +88,6 @@ class InvoiceCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         # To display the invoice items
         # Call the base implementation first to get the data
-        # context = super(InvoiceCreateView, self).get_context_data(**kwargs)
-        # Add invoice items queryset
         data = super().get_context_data(**kwargs)
         if self.request.POST:
             data['invoice_items'] = InvoiceItemsFormset(self.request.POST)
@@ -89,7 +113,6 @@ class InvoiceUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['title']
     template_name = 'edit_invoice.html'
 
-    # Limit queryset to invoices created by logged in user
     def get_queryset(self):
         if self.request.user.is_authenticated:
             return Invoice.objects.filter(user=self.request.user)
@@ -121,7 +144,6 @@ class InvoiceDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'confirm_delete_invoice.html'
     success_url = reverse_lazy('invoice-list')
 
-    # Limit queryset to invoices created by logged in user
     def get_queryset(self):
         if self.request.user.is_authenticated:
             return Invoice.objects.filter(user=self.request.user)
