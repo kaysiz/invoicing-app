@@ -1,10 +1,17 @@
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.forms.models import inlineformset_factory
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import View, ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from .models import Invoice, Client, InvoiceItem
 from .forms import InvoiceCreateForm
+
+from weasyprint import HTML
+
 
 InvoiceItemsFormset = inlineformset_factory(
     Invoice, InvoiceItem, fields=('item', 'quantity', 'rate',),
@@ -196,3 +203,48 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
             return Client.objects.filter(created_by=self.request.user)
         else:
             return Client.objects.none()
+
+
+@login_required
+def generate_pdf_invoice(request, invoice_id):
+    """Generate PDF Invoice"""
+
+    queryset = Invoice.objects.filter(user=request.user)
+    invoice = get_object_or_404(queryset, pk=invoice_id)
+
+    client = invoice.client
+    user = invoice.user
+    invoice_items = InvoiceItem.objects.filter(invoice=invoice)
+
+
+    context = {
+        "invoice": invoice,
+        "client": client,
+        "user": user,
+        "invoice_items": invoice_items,
+    }
+
+    html_template = render_to_string('pdf/html-invoice.html', context)
+
+    pdf_file = HTML(string=html_template, base_url=request.build_absolute_uri()).write_pdf()
+    pdf_filename = f'invoice_{invoice.id}.pdf'
+    response = HttpResponse(pdf_file,
+                            content_type='application/pdf')
+    response['Content-Disposition'] = 'filename=%s' % (pdf_filename)
+    return  response
+
+    # invoice = Invoice.objects.get(id=3)
+    # html_string = render_to_string('pdf/html-invoice.html', {'invoice': invoice})
+    # html = HTML(string=html_string)
+    # result = html.write_pdf()
+    #
+    # # Create HTTP Response
+    # response = HttpResponse(content_type='application/pdf;')
+    # response['Content-Disposition'] = 'inline; filename=invoice.pdf'
+    # response['Content-Transfer-Encoding'] = 'binary'
+    # with tempfile.NamedTemporaryFile(delete=True) as output:
+    #     output.write(result)
+    #     output.flush()
+    #     output = open(output.name, 'r')
+    #     response.write(output.read())
+    # return response
