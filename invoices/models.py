@@ -70,7 +70,7 @@ class Invoice(models.Model):
 
 
     def save(self, *args, **kwargs):
-        #  TODO: Figure out whay this doesn't always work
+        #  TODO: Figure out why this doesn't always work
         self.invoice_total = self.get_invoice_total()
         super().save(*args, **kwargs)
 
