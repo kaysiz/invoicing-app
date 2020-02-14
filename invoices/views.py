@@ -45,7 +45,6 @@ class HomePage(LoginRequiredMixin, ListView):
 
 
 class InvoiceListView(LoginRequiredMixin, ListView):
-    # model = Invoice --> This the same as Invoice.objects.all()
 
     template_name = 'dashboard.html'
 
@@ -232,19 +231,3 @@ def generate_pdf_invoice(request, invoice_id):
                             content_type='application/pdf')
     response['Content-Disposition'] = 'filename=%s' % (pdf_filename)
     return  response
-
-    # invoice = Invoice.objects.get(id=3)
-    # html_string = render_to_string('pdf/html-invoice.html', {'invoice': invoice})
-    # html = HTML(string=html_string)
-    # result = html.write_pdf()
-    #
-    # # Create HTTP Response
-    # response = HttpResponse(content_type='application/pdf;')
-    # response['Content-Disposition'] = 'inline; filename=invoice.pdf'
-    # response['Content-Transfer-Encoding'] = 'binary'
-    # with tempfile.NamedTemporaryFile(delete=True) as output:
-    #     output.write(result)
-    #     output.flush()
-    #     output = open(output.name, 'r')
-    #     response.write(output.read())
-    # return response

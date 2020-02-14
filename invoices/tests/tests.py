@@ -349,21 +349,6 @@ class ViewsLoggedInNewUserTests(TestCase):
             password='secretpassword'
         )
 
-        # self.client1 = Client.objects.create(
-        #     first_name="Test", last_name="Client", email="test@example.com",
-        #     company="Xcorp", address1="1234 Paradise Lane",
-        #     address2="Good Street", country="Zimbabwe",
-        #     phone_number="+263771811111",
-        #     created_by=self.user
-        # )
-        #
-        # self.invoice = Invoice.objects.create(
-        #     title="Test Invoice 1",
-        #     user=self.user,
-        #     client=self.client1,
-        #     create_date=datetime.datetime.now()
-        # )
-
         self.client.login(username='testuser', password='secretpassword')
 
     def test_empty_client_list_view(self):
